@@ -27,11 +27,10 @@ for f in reversed(replay_files):
     print(md.mission_name)
     print(md.time_of_day)
     print(md.weather)
-    print('unknown1', md.unknown1)
     print(md.txt_data)
-    print('unknown2', md.unknown2)
     print(md.mode)
+    print(md.replay_len)
 
     gd = wt.header.gamedetails
-    print([fn.value for fn in gd.fields1.fields])
-    print([fn.value for fn in gd.fields2.fields])
+    print(' '.join(fn.value for fn in gd.fields1.fields))
+    print(' '.join(fn.value for fn in gd.fields2.fields))

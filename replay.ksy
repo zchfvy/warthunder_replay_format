@@ -4,6 +4,7 @@ meta:
   application: WarThunder
   file-extension: wrpl
   encoding: UTF-8
+  endian: le
 seq:
   - id: header
     type: header
@@ -41,8 +42,16 @@ types:
       - id: weather
         type: str
         size: 32
+      - id: footer_pos
+        type: u4
+      - id: eight_unknwown_byter
+        size: 8
+      - id: twenty_four_nuls
+        size: 24
+      - id: always_21
+        type: u4
       - id: unknown1
-        size: 88
+        size: 48
       - id: txt_data
         size: 128
       - id: unknown2
@@ -68,6 +77,8 @@ types:
         type: u1
         repeat: until
         repeat-until: _ == 0x46
+      - id: zero_zero_one
+        contents: [0x00, 0x00, 0x01]
   str_field_list:
     seq:
       - id: num_fields
