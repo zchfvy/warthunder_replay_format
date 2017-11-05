@@ -12,6 +12,7 @@ seq:
     type: data_sect
   - id: compressed_body
     size: header.footer_pos - _io.pos
+    process: zlib
   - id: data_postgame
     type: data_sect
 types:

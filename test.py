@@ -2,6 +2,8 @@ import os
 
 from wt_replay import WtReplay
 
+WRITE_BODIES = True
+
 rpdir = '/cygdrive/c/Program Files (x86)/Steam/steamapps/common/War Thunder/Replays'
 replay_root = os.path.realpath(rpdir)
 
@@ -15,6 +17,7 @@ for dirName, subdirList, fileList in os.walk(replay_root):
             replay_files.append(full_name)
 
 #replay_files = [os.path.join(replay_root, '#2016.10.02 21.44.40.wrpl')]
+
 
 for f in reversed(replay_files):
     fname = os.path.basename(f)
@@ -37,3 +40,7 @@ for f in reversed(replay_files):
         print(' '.join(('*' + fn.value) for fn in gd.body.fields2.fields))
         #print('dat', gd.body.data)
         print('')
+
+    if WRITE_BODIES:
+        with open(os.path.join(replay_root, fname + '.dat'), 'wb') as f:
+            f.write(wt.compressed_body)
