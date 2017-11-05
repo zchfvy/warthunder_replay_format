@@ -14,23 +14,26 @@ for dirName, subdirList, fileList in os.walk(replay_root):
             full_name = os.path.join(dirName, fname)
             replay_files.append(full_name)
 
+#replay_files = [os.path.join(replay_root, '#2016.10.02 21.44.40.wrpl')]
+
 for f in reversed(replay_files):
     fname = os.path.basename(f)
     print('')
     print('Processing File {}'.format(fname))
 
     wt = WtReplay.from_file(f)
-    print(wt.header.mapname)
-    print(wt.header.missionname)
+    head = wt.header
+    print(head.mapname)
+    print(head.missionname)
+    print(head.mission_name)
+    print(head.time_of_day)
+    print(head.weather)
+    print(head.txt_data)
+    print(head.mode)
+    print(head.footer_pos)
 
-    md = wt.header.missiondetails
-    print(md.mission_name)
-    print(md.time_of_day)
-    print(md.weather)
-    print(md.txt_data)
-    print(md.mode)
-    print(md.replay_len)
-
-    gd = wt.header.gamedetails
-    print(' '.join(fn.value for fn in gd.fields1.fields))
-    print(' '.join(fn.value for fn in gd.fields2.fields))
+    for gd in [wt.data_pregame, wt.data_postgame]:
+        print(' '.join(fn.value for fn in gd.body.fields1.fields))
+        print(' '.join(('*' + fn.value) for fn in gd.body.fields2.fields))
+        #print('dat', gd.body.data)
+        print('')

@@ -8,8 +8,12 @@ meta:
 seq:
   - id: header
     type: header
+  - id: data_pregame
+    type: data_sect
   - id: compressed_body
-    size-eos: true
+    size: header.footer_pos - _io.pos
+  - id: data_postgame
+    type: data_sect
 types:
   header:
     seq:
@@ -25,12 +29,6 @@ types:
       - id: missionname
         type: str
         size: 256
-      - id: missiondetails
-        type: missiondetails
-      - id: gamedetails
-        type: gamedetails
-  missiondetails:
-    seq:
       - id: four_unknown_bytes  # ???
         contents: [0x00, 0x00, 0x00, 0x00]
       - id: mission_name
@@ -59,26 +57,35 @@ types:
       - id: mode
         type: str
         size: 128
-  gamedetails:
+  data_sect:
+    seq:
+      - id: head
+        type: data_sect_head
+      - id: body
+        type: data_sect_body
+        size: head.body_size
+  data_sect_head:
     seq:
       - id: bbf
         contents: [0x00, 0x42, 0x42, 0x46, 0x03, 0x00]
-      - id: unknown1
-        size: 8
+      - id: unknown
+        size: 2
+      - id: body_size
+        type: u4
+  data_sect_body:
+    seq:
+      - id: unknown
+        size: 2
       - id: fields1
         type: str_field_list
-      - id: padding1 # is it really? some data here
+      - id: padding # is it really? some data here
         type: u1
         repeat: until
         repeat-until: _ == 0x40
       - id: fields2
         type: str_field_list
-      - id: padding2 # is it really? some data here
-        type: u1
-        repeat: until
-        repeat-until: _ == 0x46
-      - id: zero_zero_one
-        contents: [0x00, 0x00, 0x01]
+      - id: data
+        size-eos: true
   str_field_list:
     seq:
       - id: num_fields
@@ -94,5 +101,3 @@ types:
       - id: value
         type: str
         size: sz
-
-
