@@ -85,8 +85,13 @@ types:
         repeat-until: _ == 0x40
       - id: fields2
         type: str_field_list
+      - id: nul_padding
+        type: u1
+        repeat: until
+        repeat-until: (_io.size - _io.pos) % 4 == 0  # Multiple of 4 bytes remain
       - id: data
-        size-eos: true
+        type: u4
+        repeat: eos
   str_field_list:
     seq:
       - id: num_fields

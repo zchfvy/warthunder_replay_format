@@ -38,7 +38,7 @@ for f in reversed(replay_files):
     for gd in [wt.data_pregame, wt.data_postgame]:
         print(' '.join(fn.value for fn in gd.body.fields1.fields))
         print(' '.join(('*' + fn.value) for fn in gd.body.fields2.fields))
-        #print('dat', gd.body.data)
+        print('dat', gd.body.data[0:24])
         print('')
 
     if WRITE_BODIES:
