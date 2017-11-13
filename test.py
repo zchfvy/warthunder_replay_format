@@ -115,8 +115,8 @@ for f in reversed(replay_files):
     data2 = data2[9:]  # first 9 fields of data seem to be something else
     print_fields_table(cols, rows, data)
 
-    manual_column_ids = ['?'] * 16 + ['name_idx', '?', 'ground_kills', '?', '?', '?', '?', '?', '?', '?',
-            '?', '?', 'score', 'plr_id_idx', 'team?', '?']
+    manual_column_ids = ['?'] * 16 + ['name_idx', 'air_kills', 'ground_kills', '?', '?', '?', '?', '?', 'assists',
+        'deaths', 'captures', '?', 'score', 'plr_id_idx', 'team?', '?']
     data_man = [unpack(d) for d in data_body.data]
     row_fmt = u"{:>15}" * len(manual_column_ids)
     print(row_fmt.format("", *manual_column_ids).encode('utf-8'))
