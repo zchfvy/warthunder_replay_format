@@ -70,24 +70,31 @@ for f in reversed(replay_files):
     print(head.mode)
     print(head.footer_pos)
 
-    def unpack(data):
-        if ord(data.flag) == 0x00:
-            return struct.unpack('<i', data.val + '\x00')[0]
-        if ord(data.flag) == 0x01:
-            return struct.unpack('<i', data.val + '\x00')[0]
-        if ord(data.flag) == 0x02:
-            return struct.unpack('<i', data.val + '\x00')[0]
-        #raise Exception('Unknown flag {:02x}'.format(ord(data.flag)))
-        return struct.unpack('<i', data.val + '\x00')[0]
+    def unpack_clr(data):
+        flag_part = data.flag
 
-    for gd in [wt.data_pregame, wt.data_postgame]:
-        print(' '.join(fn.value for fn in gd.body.fields1.fields))
-        print(u' '.join(('*' + fn.value) for fn in gd.body.fields2.fields).encode('utf-8'))
-        print('dat', [unpack(d) for d in gd.body.data[0:24]])
-        # print(len(gd.body.fields1.fields))
-        # print(len(gd.body.fields2.fields))
-        # print(len(gd.body.data))
-        print('')
+        # return u"{:>4}{:>8}".format(ord(flag_part), val_part)
+        NORMAL = '\033[0m'
+        GREEN = '\033[92m'
+        RED = '\033[91m'
+        YELLOW = '\033[93m'
+        BLUE = '\033[94m'
+
+        if ord(data.flag) == 0x00:
+            val = struct.unpack('<i', data.val + '\x00')[0]
+            return GREEN + str(val) + NORMAL
+        elif ord(data.flag) == 0x01:
+            val = struct.unpack('<i', data.val + '\x00')[0]
+            return BLUE + str(val) + NORMAL
+        elif ord(data.flag) == 0x02:
+            val = struct.unpack('<i', data.val + '\x00')[0]
+            return YELLOW + str(val) + NORMAL
+        else:
+            val = struct.unpack('<i', data.val + '\x00')[0]
+            return RED + str(val) + NORMAL
+
+    def unpack(data):
+        return struct.unpack('<i', data.val + '\x00')[0]
 
     def str_is_int(value):
         try:
@@ -101,11 +108,21 @@ for f in reversed(replay_files):
     cols = [f.value for f in data_body.fields1.fields]
     cols = [c for c in cols if c != 'nick']  # Columns seems to have 1 too many fields
     rows = [f.value for f in data_body.fields2.fields if not str_is_int(f.value) and len(f.value) > 0]
-    data = [unpack(d) for d in data_body.data if ord(d.flag) != 0x02]  # don't know what the '2' flags are for
+    data = [unpack_clr(d) for d in data_body.data]
     data = data[9:]  # first 9 fields of data seem to be something else
+    just_tabulate(32, data)
+    data2 = [unpack(d) for d in data_body.data if ord(d.flag) != 0x02]  # don't know what the '2' flags are for
+    data2 = data2[9:]  # first 9 fields of data seem to be something else
     print_fields_table(cols, rows, data)
 
-    just_tabulate(19, data)
+    manual_column_ids = ['?'] * 16 + ['name_idx', '?', 'ground_kills', '?', '?', '?', '?', '?', '?', '?',
+            '?', '?', 'score', 'plr_id_idx', 'team?', '?']
+    data_man = [unpack(d) for d in data_body.data]
+    row_fmt = u"{:>15}" * len(manual_column_ids)
+    print(row_fmt.format("", *manual_column_ids).encode('utf-8'))
+    just_tabulate(len(manual_column_ids), data_man[9:])
+
+
 
     if WRITE_BODIES:
         with open(os.path.join(replay_root, fname + '.dat'), 'wb') as f:
