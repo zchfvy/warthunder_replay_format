@@ -90,8 +90,14 @@ types:
         repeat: until
         repeat-until: (_io.size - _io.pos) % 4 == 0  # Multiple of 4 bytes remain
       - id: data
-        type: u4
+        type: flagged_num
         repeat: eos
+  flagged_num:
+    seq:
+      - id: val
+        size: 3
+      - id: flag
+        size: 1
   str_field_list:
     seq:
       - id: num_fields
